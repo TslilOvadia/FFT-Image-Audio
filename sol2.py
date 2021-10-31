@@ -20,9 +20,9 @@ def DFT(signal):
     signal = np.array(np.copy(signal))
     N  = signal.shape[0]
     row, col = np.meshgrid(np.arange(N),np.arange(N))
-    frequency = np.exp(-2*PI*1j/N)
+    frequency = np.exp(2*PI*1j/N)
     DFT_matrix = np.power(frequency, row*col)
-    dft = np.matmul(DFT_matrix, signal.T)
+    dft = np.matmul(DFT_matrix, signal.T)*1/N
     return dft
 
 
