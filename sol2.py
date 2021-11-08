@@ -5,12 +5,13 @@ import scipy.io.wavfile as wav
 import matplotlib.pyplot as plt
 from scipy import signal
 from scipy.ndimage.interpolation import map_coordinates
-
+import skimage.color
 
 ###########
 #CONSTANTS#
 ###########
-
+RGB = 2
+GRAY_SCALE = 1
 DERIVEATIVE = np.array([0.5, 0, -0.5])
 PI = np.pi
 
@@ -267,7 +268,29 @@ def phase_vocoder(spec, ratio):
 
     return warped_spec
 
+def read_image(filename, representation):
+    """
+    filename - the filename of an image on disk (could be grayscale or RGB).
+    representation - representation code, either 1 or 2 defining whether the output should be a:
+    grayscale image (1)
+    or an RGB image (2).
+    NOTE: If the input image is grayscale, we won’t call it with represen- tation = 2.
+    :param filename: String - the address of the image we want to read
+    :param representation: Int - as described above
+    :return: an image in the correct representation
+    """
+    if representation != RGB and representation != GRAY_SCALE:
+        return "Invalid Input. You may use representation <- {1, 2}"
+    tempImage = plt.imread(filename)[:, :, :3]
+    resultImage = np.array(tempImage)
+
+    if representation == GRAY_SCALE:
+        resultImage = skimage.color.rgb2gray(tempImage)
+    elif representation == RGB:
+        resultImage = tempImage
+    if resultImage.max() > 1:
+        resultImage = resultImage/255
 
 
-if __name__ == "__main__":
-    pass
+
+    return resultImage.astype(np.float64)
