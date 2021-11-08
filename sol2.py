@@ -67,7 +67,6 @@ def DFT2(image):
     """
     image = np.copy(image)
     size_rows, size_cols = image.shape[0], image.shape[1]
-    print(size_rows, size_cols)
     result_img = np.zeros(image.shape, dtype=np.complex128)
     inner_dft = np.zeros(image.shape, dtype=np.complex128)
     for row in range(0, size_rows):
@@ -122,7 +121,6 @@ def resize(data,ratio):
 
     frequencies = DFT(data)
     frequencies = np.fft.fftshift(frequencies)
-    # plt.plot(frequencies)
 
     new_freq = np.array([])
     N = len(frequencies)
@@ -292,6 +290,7 @@ def read_image(filename, representation):
     if resultImage.max() > 1:
         resultImage = resultImage/255
 
-
     return resultImage.astype(np.float64)
+
+
 
