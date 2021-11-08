@@ -87,9 +87,9 @@ def IDFT2(fourier_image):
     size_rows, size_cols = image.shape[0], image.shape[1]
     result_img = np.zeros(image.shape, dtype=np.complex128)
     inner_dft = np.zeros(image.shape, dtype=np.complex128)
-    for row in range(0, size_cols):
+    for row in range(0, size_rows):
         inner_dft[row,:] = IDFT(image[row,:])
-    for col in range(0,size_rows):
+    for col in range(0,size_cols):
         result_img[:, col] = np.matmul(DFT(image[:,col]),inner_dft[:,col])
     return result_img
 
