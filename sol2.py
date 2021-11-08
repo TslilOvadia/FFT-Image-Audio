@@ -10,6 +10,7 @@ import skimage.color
 ###########
 #CONSTANTS#
 ###########
+
 RGB = 2
 GRAY_SCALE = 1
 DERIVEATIVE = np.array([0.5, 0, -0.5])
@@ -36,7 +37,7 @@ def DFT(signal):
     row, col = np.meshgrid(np.arange(N),np.arange(N))
     frequency = np.exp(2*PI*1j/N)
     DFT_matrix = np.power(frequency, row*col)
-    dft = np.matmul(DFT_matrix, signal.T)
+    dft = np.matmul(DFT_matrix, signal)
     return dft
 
 
@@ -53,15 +54,14 @@ def IDFT(fourier_signal):
         return []
     row, col = np.meshgrid(np.arange(N),np.arange(N))
     frequency = np.exp(-2*PI*1j/N)
-    IDFT_matrix =  np.power(frequency, row*col)
-    idft = np.matmul(IDFT_matrix,fourier_signal.T )*1/N
+    IDFT_matrix = np.power(frequency, row*col)
+    idft = np.matmul(IDFT_matrix,fourier_signal)*1/N
     return idft
 
 
 
 def DFT2(image):
     """
-
     :param image: image is a grayscale image of dtype float64
     :return:
     """
@@ -78,7 +78,6 @@ def DFT2(image):
 
 def IDFT2(fourier_image):
     """
-
     :param fourier_image: fourier_image is a 2D array of type
            complex128, both of shape (M,N) or (M,N,1)
     :return:
@@ -292,5 +291,5 @@ def read_image(filename, representation):
         resultImage = resultImage/255
 
 
-
     return resultImage.astype(np.float64)
+
