@@ -70,9 +70,9 @@ def DFT2(image):
     print(size_rows, size_cols)
     result_img = np.zeros(image.shape, dtype=np.complex128)
     inner_dft = np.zeros(image.shape, dtype=np.complex128)
-    for row in range(0, size_cols):
+    for row in range(0, size_rows):
         inner_dft[row,:] = DFT(image[row,:])
-    for col in range(0,size_rows):
+    for col in range(0, size_cols):
         result_img[:, col] = np.matmul(DFT(image[:,col]),inner_dft[:,col])
     return result_img * 1/(size_rows*size_cols)
 
