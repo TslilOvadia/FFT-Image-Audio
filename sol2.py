@@ -173,7 +173,7 @@ def resize_vocoder(data, ratio):
     spectrogram = stft(data)
     new_spectogram = np.array(np.shape(spectrogram.shape))
     for idx, interval in enumerate(spectrogram):
-        new_spectogram[idx] = resize(interval, ratio)
+        new_spectogram[idx] = np.array(resize(interval, ratio))
     new_spectogram = phase_vocoder(new_spectogram, ratio)
     result = istft(new_spectogram)
     return result
