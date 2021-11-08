@@ -66,7 +66,8 @@ def DFT2(image):
     :return:
     """
     image = np.copy(image)
-    size_rows, size_cols = image.shape[0], image[1]
+    size_rows, size_cols = image.shape[0], image.shape[1]
+    print(size_rows, size_cols)
     result_img = np.zeros(image.shape, dtype=np.complex128)
     inner_dft = np.zeros(image.shape, dtype=np.complex128)
     for row in range(0, size_cols):
@@ -83,7 +84,7 @@ def IDFT2(fourier_image):
     :return:
     """
     image = np.copy(fourier_image)
-    size_rows, size_cols = image.shape[0], image[1]
+    size_rows, size_cols = image.shape[0], image.shape[1]
     result_img = np.zeros(image.shape, dtype=np.complex128)
     inner_dft = np.zeros(image.shape, dtype=np.complex128)
     for row in range(0, size_cols):
