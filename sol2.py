@@ -70,7 +70,7 @@ def DFT2(image):
     result_img = np.zeros((size_rows * size_cols), complex)
     inner_dft = np.zeros((size_rows * size_cols), complex)
     for row in range(0, size_cols):
-        inner_dft[row] = DFT(image[row])
+        inner_dft[row,:] = DFT(image[row,:])
     for col in range(0,size_rows):
         result_img[:, col] = np.matmul(DFT(image[:,col]),inner_dft[:,col])
     return result_img * 1/(size_rows*size_cols)
@@ -87,7 +87,7 @@ def IDFT2(fourier_image):
     result_img = np.zeros((size_rows * size_cols), complex)
     inner_dft = np.zeros((size_rows * size_cols), complex)
     for row in range(0, size_cols):
-        inner_dft[row] = IDFT(image[row])
+        inner_dft[row,:] = IDFT(image[row,:])
     for col in range(0,size_rows):
         result_img[:, col] = np.matmul(DFT(image[:,col]),inner_dft[:,col])
     return result_img
