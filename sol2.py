@@ -161,9 +161,8 @@ def change_samples(filename, ratio):
 
 def resize_spectrogram(data, ratio):
     spectrogram = stft(data)
-    new_spectogram = np.array(np.shape(spectrogram.shape))
+    new_spectogram = np.zeros(np.shape(spectrogram.shape))
     for idx, interval in enumerate(spectrogram):
-        print(idx, interval)
         new_spectogram[idx] = resize(interval, ratio)
     result = istft(new_spectogram)
     return result
