@@ -13,7 +13,7 @@ import skimage.color
 
 RGB = 2
 GRAY_SCALE = 1
-DERIVEATIVE = np.array([0.5, 0, -0.5])
+DERIVEATIVE = np.array([[0.5], [0], [-0.5]])
 PI = np.pi
 
 
@@ -178,7 +178,8 @@ def resize_vocoder(data, ratio):
 
 
 def conv_der(im):
-    dx, dy = signal.convolve2d(im, DERIVEATIVE, mode="same"),signal.convolve2d(im, DERIVEATIVE.T, mode="same")
+    dx = signal.convolve2d(im, DERIVEATIVE, mode="same")
+    dy = signal.convolve2d(im, DERIVEATIVE.T, mode="same")
     return np.sqrt(np.abs(dx)**2 + np.abs(dy)**2)
 
 def fourier_der(im):
@@ -291,3 +292,19 @@ def read_image(filename, representation):
     return resultImage.astype(np.float64)
 
 
+
+#
+# if __name__ == "__main__":
+#     # a = change_rate("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav", 1.5)
+#     # b = change_samples("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav", 0.5)
+#     # read the file:
+#     audio_orig = wav.read("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav")
+# 
+#     # unpack the audio file's into its data and the sample rate of the original file:
+#     sample_rate, data_orig = audio_orig
+#     # w = resize_spectrogram(data_orig,0.5)
+#     # wav.write("ttt.wav", sample_rate, w)
+#
+#     im = read_image("/Users/tzlilovadia/Desktop/ex2_presubmit/monkey.jpeg", 1)
+#     d = conv_der(im)
+#     plt.imshow(d)
