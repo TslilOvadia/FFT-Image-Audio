@@ -132,11 +132,10 @@ def resize(data,ratio):
         new_freq = np.hstack((neg, pos))
     elif ratio < 1:
         # Zero padding for the frequencies:
-        new_freq = np.hstack((np.zeros(int(pivot/ratio)), frequencies, np.zeros(int(pivot/ratio))))
-
+        new_freq = np.hstack((np.zeros(int(N*(ratio))), frequencies, np.zeros(int(N*(ratio)+1))))
     result = IDFT(new_freq)
 
-    return np.real(result)
+    return np.real(result).astype(np.float64)
     # If we want to create a slower version of the data:
 
 def change_samples(filename, ratio):
@@ -154,14 +153,14 @@ def change_samples(filename, ratio):
     sample_rate, data_orig = audio_orig
 
     # Extract the frequencies of the audio file using the Fourier transform implementation we did:
-    wav.write("change_samples.wav", sample_rate ,resize(data_orig,ratio).astype(np.float64))
+    wav.write("change_samples.wav", sample_rate ,resize(data_orig,ratio))
 
 
 def resize_spectrogram(data, ratio):
     spectrogram = stft(data)
-    new_spectogram = np.zeros(np.shape(spectrogram.shape))
-    for idx, interval in enumerate(spectrogram):
-        new_spectogram[idx] = resize(interval, ratio)
+    new_spectogram = np.zeros((int(spectrogram.shape[0]), int(spectrogram.shape[1]/ratio)))
+    for row in range(len(spectrogram)):
+        new_spectogram[row,:] = resize(spectrogram[row,:], ratio)
     result = istft(new_spectogram)
     return result
 
@@ -170,9 +169,8 @@ def resize_spectrogram(data, ratio):
 def resize_vocoder(data, ratio):
     spectrogram = stft(data)
     new_spectogram = np.array(np.shape(spectrogram.shape))
-    print(spectrogram.shape)
-    for idx, interval in enumerate(spectrogram):
-        new_spectogram[idx,:] = np.array(resize(interval, ratio))
+    for row in range(len(spectrogram)):
+        new_spectogram[row,:] = resize(spectrogram[row,:], ratio)
     new_spectogram = phase_vocoder(new_spectogram, ratio)
     result = istft(new_spectogram)
     return result
@@ -294,3 +292,19 @@ def read_image(filename, representation):
 
 
 
+
+if __name__ == "__main__":
+    # a = change_rate("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav", 1.5)
+    # b = change_samples("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav", 0.5)
+    # read the file:
+    audio_orig = wav.read("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav")
+
+    # unpack the audio file's into its data and the sample rate of the original file:
+    sample_rate, data_orig = audio_orig
+    spec = stft(data_orig)
+    w = resize_spectrogram(data_orig,0.5)
+    print(spec.shape)
+    wav.write("ttt.wav", sample_rate, w)
+    # plt.specgram(spec, sample_rate)
+    # plt.show()
+    # change_samples("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav", 0.9)
