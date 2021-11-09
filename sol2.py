@@ -289,22 +289,22 @@ def read_image(filename, representation):
     return resultImage.astype(np.float64)
 
 
-
 #
-if __name__ == "__main__":
-    # a = change_rate("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav", 1.5)
-    # b = change_samples("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav", 0.5)
-    # read the file:
-    audio_orig = wav.read("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav")
-
-    # unpack the audio file's into its data and the sample rate of the original file:
-    sample_rate, data_orig = audio_orig
-    # w = resize_spectrogram(data_orig,0.5)
-    # wav.write("ttt.wav", sample_rate, w)
-
-    im = read_image("/Users/tzlilovadia/Desktop/ex2_presubmit/monkey.jpeg", 1)
-    x = fourier_der(im)
-    y = conv_der(im)
-    plt.imshow(y)
-    plt.show()
-
+# #
+# if __name__ == "__main__":
+#     # a = change_rate("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav", 1.5)
+#     # b = change_samples("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav", 0.5)
+#     # read the file:
+#     audio_orig = wav.read("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav")
+#
+#     # unpack the audio file's into its data and the sample rate of the original file:
+#     sample_rate, data_orig = audio_orig
+#     # w = resize_spectrogram(data_orig,0.5)
+#     # wav.write("ttt.wav", sample_rate, w)
+#
+#     im = read_image("/Users/tzlilovadia/Desktop/ex2_presubmit/monkey.jpeg", 1)
+#     x = fourier_der(im)
+#     y = conv_der(im)
+#     plt.imshow(y)
+#     plt.show()
+#
