@@ -183,25 +183,17 @@ def conv_der(im):
     return np.sqrt(np.abs(dx)**2 + np.abs(dy)**2)
 
 def fourier_der(im):
-    # fourier_dx = np.zeros(fourier_im.shape[0], fourier_im.shape[1])
-    # fourier_dy = np.zeros(fourier_im.shape[0], fourier_im.shape[1])
-    # for col in range(fourier_im.shape[0]):
-    #     fourier_dx[:,col] = fourier_x_freq[:,col]*fourier_im[:,col]
-    #
-    # for row in range(fourier_im.shape[1]):
-    #     fourier_dy[row, :] = fourier_y_freq[row,:] * fourier_im[row,:]
-    # fourier_im = DFT2(np.copy(im))
-    # print(fourier_im.shape)
-    # fourier_y_freq, fourier_x_freq = np.meshgrid(np.arange(fourier_im.shape[0]),np.arange(fourier_im.shape[1]))
-    # fourier_dx = np.zeros((fourier_im.shape[0], fourier_im.shape[1]))
-    # fourier_dy = np.zeros((fourier_im.shape[0], fourier_im.shape[1]))
-    #
+    """
+    function to compute fourier coefficients
+    :param im:
+    :return:
+    """
     fourier_im = DFT2(np.copy(im))
     fourier_y_freq, fourier_x_freq = np.meshgrid(np.arange(fourier_im.shape[0]),np.arange(fourier_im.shape[1]))
     fourier_dx = fourier_im * fourier_x_freq.T
     fourier_dy = fourier_im * fourier_y_freq.T
     fourier_derived = fourier_dx + fourier_dy
-    image = IDFT2(fourier_derived)
+    image = np.real(IDFT2(fourier_derived)).astype(np.float64)
     return image
 
 ####################################################################################
@@ -297,19 +289,22 @@ def read_image(filename, representation):
     return resultImage.astype(np.float64)
 
 
+
 #
-# #
-# if __name__ == "__main__":
-#     # a = change_rate("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav", 1.5)
-#     # b = change_samples("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav", 0.5)
-#     # read the file:
-#     audio_orig = wav.read("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav")
-#
-#     # unpack the audio file's into its data and the sample rate of the original file:
-#     sample_rate, data_orig = audio_orig
-#     # w = resize_spectrogram(data_orig,0.5)
-#     # wav.write("ttt.wav", sample_rate, w)
-#
-#     im = read_image("/Users/tzlilovadia/Desktop/ex2_presubmit/monkey.jpeg", 1)
-#     fourier_der(im)
-#
+if __name__ == "__main__":
+    # a = change_rate("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav", 1.5)
+    # b = change_samples("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav", 0.5)
+    # read the file:
+    audio_orig = wav.read("/Users/tzlilovadia/Desktop/ex2_presubmit/aria_4kHz.wav")
+
+    # unpack the audio file's into its data and the sample rate of the original file:
+    sample_rate, data_orig = audio_orig
+    # w = resize_spectrogram(data_orig,0.5)
+    # wav.write("ttt.wav", sample_rate, w)
+
+    im = read_image("/Users/tzlilovadia/Desktop/ex2_presubmit/monkey.jpeg", 1)
+    x = fourier_der(im)
+    y = conv_der(im)
+    plt.imshow(y)
+    plt.show()
+
