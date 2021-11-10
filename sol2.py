@@ -173,10 +173,11 @@ def resize_spectrogram(data, ratio):
     spectrogram = stft(data)
 
     # Step 2: initialize a new spectrogram with the correct shape:
-    new_spectogram = np.zeros((int(spectrogram.shape[0]),resize(spectrogram[0,:], ratio).shape[0]))
-
+    first_resize = resize(spectrogram[0,:], ratio)
+    new_spectogram = np.zeros((int(spectrogram.shape[0]),len(first_resize)))
+    new_spectogram[0,:] = first_resize
     # Step 3: iterate through the spectrogram's rows, and resize each row in respect to the ratio parameter:
-    for row in range(len(spectrogram)):
+    for row in range(1,len(spectrogram)):
         new_spectogram[row,:] = resize(spectrogram[row,:], ratio)
 
     # Step 4: perform istft on the spectrogram to get the modified audio:
