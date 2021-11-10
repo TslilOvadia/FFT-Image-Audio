@@ -1,0 +1,6 @@
+When using the resize_spectrogram we get that we hear the sound of the audio clearly only partially - there are times
+when the sound is clearly played, and there are times when the sound is fading out and not so clear.
+When we manipulated the frequencies inside the spetrogram but not paying attention to the imact it has on the phase,
+we're causing to a phenomena called destructive interference - where two (or more) waves with an opposite phase meet,
+their amplitudes will be subtracted from one another, which will lead to the pattern described above.
+this is why the resize_vocoder function output sounded better.

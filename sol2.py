@@ -111,7 +111,7 @@ def change_rate(filename, ratio):
     sample_rate,data_orig = audio_orig
 
     # manipulate the the data and save it to a new file with different speed:
-    wav.write("change_rate.wav", int(ratio*sample_rate), data_orig)
+    wav.write("change_rate.wav", int(ratio*sample_rate), data_orig.astype(np.float64))
 
 
 def resize(data,ratio):
@@ -133,7 +133,7 @@ def resize(data,ratio):
     # Step 3: modify the frequencies:
     if ratio > 1:
         # Chop the high part of the frequencies:
-        pos = frequencies[pivot - int(pivot*(1/ratio)) : pivot]
+        pos = frequencies[pivot - int(pivot*(1/ratio)): pivot]
         neg = frequencies[pivot: pivot + int(pivot * (1/ratio))]
         new_freq = np.hstack((neg, pos))
     elif ratio < 1:
@@ -159,7 +159,7 @@ def change_samples(filename, ratio):
     sample_rate, data_orig = audio_orig
 
     # Extract the frequencies of the audio file using the Fourier transform implementation we did:
-    wav.write("change_samples.wav", sample_rate ,resize(data_orig,ratio))
+    wav.write("change_samples.wav", sample_rate ,resize(data_orig.astype(np.float64),ratio))
 
 
 def resize_spectrogram(data, ratio):
@@ -173,7 +173,7 @@ def resize_spectrogram(data, ratio):
     spectrogram = stft(data)
 
     # Step 2: initialize a new spectrogram with the correct shape:
-    new_spectogram = np.zeros((int(spectrogram.shape[0]), int(spectrogram.shape[1]/ratio)))
+    new_spectogram = np.zeros((int(spectrogram.shape[0]),resize(spectrogram[0,:], ratio).shape[0]))
 
     # Step 3: iterate through the spectrogram's rows, and resize each row in respect to the ratio parameter:
     for row in range(len(spectrogram)):
@@ -197,7 +197,7 @@ def resize_vocoder(data, ratio):
     spectrogram = stft(data)
 
     # Step 2: initialize a new spectrogram with the correct shape:
-    new_spectogram = np.array(np.shape(spectrogram.shape))
+    new_spectogram = np.zeros((int(spectrogram.shape[0]),resize(spectrogram[0,:], ratio).shape[0]))
 
     # Step 3: iterate through the spectrogram's rows, and resize each row in respect to the ratio parameter:
     for row in range(len(spectrogram)):
@@ -345,4 +345,3 @@ def read_image(filename, representation):
         resultImage = resultImage/255
 
     return resultImage.astype(np.float64)
-
