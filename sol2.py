@@ -36,8 +36,8 @@ def DFT(signal):
     if N == 0:
         return []
     row, col = np.meshgrid(np.arange(N),np.arange(N))
-    frequency = np.exp(-2*PI*1j/N)
-    DFT_matrix = np.power(frequency, row*col)
+    frequency = row*col*(-2*PI*1j/N)
+    DFT_matrix = np.exp(frequency)
     dft = np.matmul(DFT_matrix, signal)
     return dft
 
@@ -54,8 +54,8 @@ def IDFT(fourier_signal):
     if N == 0:
         return []
     row, col = np.meshgrid(np.arange(N),np.arange(N))
-    frequency = np.exp(2*PI*1j/N)
-    IDFT_matrix = np.power(frequency, row*col)
+    frequency = row*col*(2*PI*1j/N)
+    IDFT_matrix = np.exp(frequency)
     idft = np.matmul(IDFT_matrix,fourier_signal)*1/N
     return idft
 
@@ -67,16 +67,22 @@ def DFT2(image):
     :return:
     """
 
+    rows = np.arange(image.shape[0])
+    cols = np.arange(image.shape[1])
+    fourier_image_row = np.zeros(image.shape).astype(np.complex128)
+    fourier_image = np.zeros(image.shape).astype(np.complex128)
     # Step 1: compute the DFT on the row's elements:
-    fourier_image_row = DFT(image)
+    for row in rows:
+        fourier_image_row[row,:] = DFT(image[row,:])
 
     # Step 2: transpose the Image we got in step #1:
-    fourier_image_row = fourier_image_row.T
 
     # Step #3: Calculate the DFT with respect to the cols dimensions:
-    fourier_image = DFT(fourier_image_row)
+    for col in cols:
+        fourier_image[:,col] = DFT(fourier_image_row[:,col])
+    # fourier_image = DFT(fourier_image_row)
 
-    return fourier_image.T
+    return fourier_image
 
 
 
@@ -86,16 +92,19 @@ def IDFT2(fourier_image):
            complex128, both of shape (M,N) or (M,N,1)
     :return:
     """
+    rows = np.arange(fourier_image.shape[0])
+    cols = np.arange(fourier_image.shape[1])
+    image_row = np.zeros(fourier_image.shape).astype(np.complex128)
+    image = np.zeros(fourier_image.shape).astype(np.complex128)
     # Step 1: compute the IDFT on the row's elements:
-    image_x = IDFT(fourier_image)
+    for row in rows:
+        image_row[row,:] = IDFT(fourier_image[row,:])
 
-    # Step 2: transpose the Image we got in step #1:
-    image_x = image_x.T
+    # Step 2: Calculate the DFT with respect to the cols dimensions:
+    for col in cols:
+        image[:,col] = IDFT(image_row[:,col])
 
-    # Step 3: Calculate the DFT with respect to the cols dimensions:
-    image = IDFT(image_x)
-
-    return image.T
+    return image
 
 
 def change_rate(filename, ratio):
@@ -122,11 +131,13 @@ def resize(data,ratio):
     :return: resize is a 1D ndarray of the dtype of data representing the new sample points.
     """
     # Step 1: Get Fourier transform of the data:
+    if  (len(data) == 0) :
+        return data
     frequencies = DFT(data)
     frequencies = np.fft.fftshift(frequencies)
 
     # Step 2: initialize some variable we will use later:
-    new_freq = np.array([])
+    new_freq = np.zeros(int(len(frequencies)/ratio)).astype(np.complex128)
     N = len(frequencies)
     pivot = int(N/2)
 
@@ -135,11 +146,19 @@ def resize(data,ratio):
         # Chop the high part of the frequencies:
         pos = frequencies[pivot - int(pivot*(1/ratio)): pivot]
         neg = frequencies[pivot: pivot + int(pivot * (1/ratio))]
-        new_freq = np.hstack((neg, pos))
+        pos_i = arange(len(pos))
+        neg_i = arange(len(neg))
+        new_freq[neg_i] = neg[neg_i]
+        new_freq[len(neg) + pos_i ] = pos[pos_i]
     elif ratio < 1:
         # Zero padding for the frequencies:
-        new_freq = np.hstack((np.zeros(int(N*(ratio))), frequencies, np.zeros(int(N*(ratio)+1))))
-
+        zeros = np.zeros(int(N*(ratio)))
+        zer = arange(len(zeros))
+        freq = arange(len(frequencies))
+        # new_freq = np.hstack((np.zeros(int(N*(ratio))), frequencies, np.zeros(int(N*(ratio)+1))))
+        new_freq[zer] = 0
+        new_freq[len(zeros) + freq] = frequencies[freq]
+        new_freq[len(zeros) + len(frequencies) + zer] = 0
     # Step 4: perform inverse Fourier transform:
     result = IDFT(new_freq)
     return np.real(result).astype(np.float64)
@@ -159,7 +178,9 @@ def change_samples(filename, ratio):
     sample_rate, data_orig = audio_orig
 
     # Extract the frequencies of the audio file using the Fourier transform implementation we did:
-    wav.write("change_samples.wav", sample_rate ,resize(data_orig.astype(np.float64),ratio))
+    data = resize(data_orig.astype(np.float64),ratio)
+    wav.write("change_samples.wav", sample_rate , data)
+    return data
 
 
 def resize_spectrogram(data, ratio):
@@ -194,21 +215,13 @@ def resize_vocoder(data, ratio):
     :param ratio: the ratio of the speed of the output file to the original file's speed (assume 0.25 < ratio < 4)
     :return: modified audio file
     """
-    # Step 1: Build the spectrogram using stft:
-    spectrogram = stft(data)
+    # Step 1: Build the spectrogram using stft & resize the signal with paying attention to the phase:
+    spectrogram = phase_vocoder(stft(data),ratio)
 
-    # Step 2: initialize a new spectrogram with the correct shape:
-    new_spectogram = np.zeros((int(spectrogram.shape[0]),resize(spectrogram[0,:], ratio).shape[0]))
 
-    # Step 3: iterate through the spectrogram's rows, and resize each row in respect to the ratio parameter:
-    for row in range(len(spectrogram)):
-        new_spectogram[row,:] = resize(spectrogram[row,:], ratio)
 
-    # Step 4: Fix the phase after resizing each row of the spectrogram:
-    new_spectogram = phase_vocoder(new_spectogram, ratio)
-
-    # Step 5: perform istft on the spectrogram to get the modified audio:
-    result = istft(new_spectogram)
+    # Step 2: perform istft on the spectrogram to get the modified audio:
+    result = istft(spectrogram)
     return result
 
 
@@ -343,6 +356,6 @@ def read_image(filename, representation):
     elif representation == RGB:
         resultImage = tempImage
     if resultImage.max() > 1:
-        resultImage = resultImage/255
+        resultImage = resultImage/256
 
     return resultImage.astype(np.float64)
