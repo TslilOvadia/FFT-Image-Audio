@@ -17,13 +17,6 @@ GRAY_SCALE = 1
 DERIVEATIVE = np.array([[0.5], [0], [-0.5]])
 PI = np.pi
 
-
-def unitRoot(x,N,u):
-    return np.exp((-2*PI*1j*x*u)/N)
-
-def inverseUnitRoot(x,N,u):
-    return np.exp((2*PI*1j*x*u)/N)
-
 # 1.1
 def DFT(signal):
     """
@@ -71,16 +64,15 @@ def DFT2(image):
     cols = np.arange(image.shape[1])
     fourier_image_row = np.zeros(image.shape).astype(np.complex128)
     fourier_image = np.zeros(image.shape).astype(np.complex128)
+
     # Step 1: compute the DFT on the row's elements:
     for row in rows:
         fourier_image_row[row,:] = DFT(image[row,:])
 
-    # Step 2: transpose the Image we got in step #1:
 
-    # Step #3: Calculate the DFT with respect to the cols dimensions:
+    # Step 2: Calculate the DFT with respect to the cols dimensions:
     for col in cols:
         fourier_image[:,col] = DFT(fourier_image_row[:,col])
-    # fourier_image = DFT(fourier_image_row)
 
     return fourier_image
 
@@ -152,7 +144,7 @@ def resize(data,ratio):
         new_freq[len(neg) + pos_i ] = pos[pos_i]
     elif ratio < 1:
         # Zero padding for the frequencies:
-        zeros = np.zeros(int(N*(ratio)))
+        zeros = np.zeros(int(abs(N - len(new_freq))/2))
         zer = arange(len(zeros))
         freq = arange(len(frequencies))
         # new_freq = np.hstack((np.zeros(int(N*(ratio))), frequencies, np.zeros(int(N*(ratio)+1))))
@@ -160,7 +152,7 @@ def resize(data,ratio):
         new_freq[len(zeros) + freq] = frequencies[freq]
         new_freq[len(zeros) + len(frequencies) + zer] = 0
     # Step 4: perform inverse Fourier transform:
-    result = IDFT(new_freq)
+    result = IDFT(np.fft.ifftshift(new_freq))
     return np.real(result).astype(np.float64)
 
 def change_samples(filename, ratio):
@@ -179,7 +171,7 @@ def change_samples(filename, ratio):
 
     # Extract the frequencies of the audio file using the Fourier transform implementation we did:
     data = resize(data_orig.astype(np.float64),ratio)
-    wav.write("change_samples.wav", sample_rate , data)
+    wav.write("change_samples.wav", sample_rate , data.astype(np.float64))
     return data
 
 
@@ -359,3 +351,4 @@ def read_image(filename, representation):
         resultImage = resultImage/256
 
     return resultImage.astype(np.float64)
+
