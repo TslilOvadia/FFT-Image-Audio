@@ -1,7 +1,0 @@
-change_rate function makes the audio run faster than the original audio, and we can hear all the frequencies
-and all the components that made the sound, just that in this case it is all sound high pitched when compared to the
-original audio.
-change_samples on the other hand, when we can hear only part of the frequencies components we heared on the original
-audio. The reason for this is that we manipulated the original audio in a manner that "spreads" the frequencies in
-accordance to the ratio, which translates to basically "cutt off" the high frequency components. this results in
-a faster sound but we can hear only part of the frequencies components.

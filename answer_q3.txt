@@ -1,6 +1,0 @@
-When using the conv_der function, we used a basic kernel in order to derive the image on each direction, which translates
-virtually to subtract every two pixels that have one pixel between them.
-fourier_der on the other hand, uses other method in order to derive the image on each direction - It takes each frequency
-component and multiplies it with the index representing it. This results in enhanced frequency components in correlation
-with the frequency magnitude (index). In conclusion, we see that fourier_der gives us more enhanced derived image,
-including noisy frequencies, while conv_der gives us less noisy image.
